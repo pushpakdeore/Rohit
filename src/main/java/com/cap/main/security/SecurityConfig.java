@@ -34,23 +34,8 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth// If using H2
-                        .requestMatchers("/api/auth/**",
-                                "/users/register",
-                                "/users/login",
-                                "/users/confirmEmail",
-                                "/actuator/**",
-                                "/h2-console/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui/index.html",
-                                "/swagger-ui/**",
-                               " /v3/api-docs",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs.yaml",
-                                "/swagger-resources",
-                                "/swagger-resources/**",
-                                "/configuration/ui",
-                                "/configuration/security",
-                                "/webjars/**").permitAll()
+                        .requestMatchers("/api/auth/**"
+                                ).permitAll()
                         // Allow Swagger
                         .anyRequest().authenticated()
                 )

@@ -59,7 +59,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
-        if (user.isOtpVerified()) {
+        if (!user.isOtpVerified()) {
             user.setOtpVerified(true);
             userRepository.save(user);
             return true;

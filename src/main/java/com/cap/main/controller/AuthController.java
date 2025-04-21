@@ -1,5 +1,6 @@
 package com.cap.main.controller;
 
+import com.cap.main.security.JWTService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,13 +25,15 @@ public class AuthController {
     private final UserRepository userRepository;
 //    private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final JWTService jwtService;
 
     // Constructor Injection
-    public AuthController(UserService userService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(UserService userService, UserRepository userRepository, PasswordEncoder passwordEncoder,JWTService jwtService) {
         this.userService = userService;
         this.userRepository = userRepository;
 //        this.jwtTokenProvider = jwtTokenProvider;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService =jwtService;
     }
 
     @PostMapping("/signup")
@@ -46,21 +49,22 @@ public class AuthController {
                 : "Invalid OTP. Please try again.";
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-//        User user = UserRepository.findByEmail(request.getEmail())
-//            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-//
-//        if (!user.isOtpVerified()) {
-//            throw new IllegalStateException("Please verify OTP before logging in.");
-//        }
-//
-//        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-//            throw new BadCredentialsException("Invalid password");
-//        }
-//
-//        String token = jwtTokenProvider.createToken(user.getEmail());
-//        return ResponseEntity.ok(new AuthResponse(token));
-//    }
+    @PostMapping("/login")
+    public String login(@RequestBody AuthRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (!user.isOtpVerified()) {
+            throw new IllegalStateException("Please verify OTP before logging in.");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        String token = jwtService.generateToken(user.getEmail());
+        return token;
+    }
+
 
 }
